@@ -4,7 +4,7 @@ import { QRCodeSVG } from 'qrcode.react'
 import { 
   Smartphone, Download, Copy, CheckCircle2, X, 
   Apple, Chrome, Share2, ExternalLink,
-  QrCode, Globe, Smartphone as AndroidIcon
+  QrCode, Globe, Smartphone as AndroidIcon, AlertCircle
 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 
@@ -15,11 +15,29 @@ export default function DownloadPage() {
   const [isIOS, setIsIOS] = useState(false)
   const [isAndroid, setIsAndroid] = useState(false)
   const [isStandalone, setIsStandalone] = useState(false)
+  const [manualIP, setManualIP] = useState('')
+  const [isLocalhost, setIsLocalhost] = useState(false)
 
   useEffect(() => {
     // Obtener URL actual
     const currentUrl = window.location.origin
-    setAppUrl(currentUrl)
+    const isLocal = currentUrl.includes('localhost') || currentUrl.includes('127.0.0.1')
+    setIsLocalhost(isLocal)
+    
+    // Cargar IP manual si existe
+    const savedIP = localStorage.getItem('mqt-manual-ip')
+    if (savedIP) {
+      setManualIP(savedIP)
+    }
+    
+    // Si hay IP manual y es localhost, usarla
+    let finalUrl = currentUrl
+    if (isLocal && savedIP && savedIP.trim()) {
+      const port = window.location.port || '3002'
+      finalUrl = `http://${savedIP.trim()}:${port}`
+    }
+    
+    setAppUrl(finalUrl)
 
     // Detectar dispositivo
     const userAgent = navigator.userAgent || navigator.vendor || (window as any).opera
@@ -31,6 +49,18 @@ export default function DownloadPage() {
                              window.matchMedia('(display-mode: standalone)').matches
     setIsStandalone(isStandaloneMode)
   }, [])
+
+  useEffect(() => {
+    // Actualizar URL cuando cambia la IP manual
+    if (isLocalhost && manualIP && manualIP.trim()) {
+      const port = window.location.port || '3002'
+      const newUrl = `http://${manualIP.trim()}:${port}`
+      setAppUrl(newUrl)
+      localStorage.setItem('mqt-manual-ip', manualIP.trim())
+    } else if (!manualIP && isLocalhost) {
+      setAppUrl(window.location.origin)
+    }
+  }, [manualIP, isLocalhost])
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(appUrl)
@@ -156,6 +186,44 @@ export default function DownloadPage() {
               <h2 className="text-2xl font-bold mb-2">Código QR</h2>
               <p className="text-gray-400">Escanea para acceder desde tu móvil</p>
             </div>
+
+            {/* Warning for Localhost on iOS */}
+            {isLocalhost && (
+              <div className="mb-6 p-4 bg-yellow-500/20 border border-yellow-500/30 rounded-xl">
+                <div className="flex items-start gap-3">
+                  <AlertCircle className="w-5 h-5 text-yellow-400 mt-0.5 flex-shrink-0" />
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-yellow-400 mb-2">⚠️ Para iOS: Usa la IP de Red</h3>
+                    <p className="text-sm text-gray-300 mb-3">
+                      El QR con localhost no funciona en iOS. Ingresa la IP de tu red local:
+                    </p>
+                    <div className="flex gap-2 mb-2">
+                      <input
+                        type="text"
+                        value={manualIP}
+                        onChange={(e) => setManualIP(e.target.value)}
+                        placeholder="Ej: 192.168.1.97"
+                        className="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-primary text-sm font-mono"
+                      />
+                      <button
+                        onClick={() => {
+                          if (manualIP.trim()) {
+                            const port = window.location.port || '3002'
+                            setAppUrl(`http://${manualIP.trim()}:${port}`)
+                          }
+                        }}
+                        className="px-4 py-2 bg-primary text-white rounded-lg font-semibold hover:bg-primary/80 transition-colors text-sm whitespace-nowrap"
+                      >
+                        Usar IP
+                      </button>
+                    </div>
+                    <p className="text-xs text-gray-400">
+                      Busca "Network: http://XXX.XXX.XXX.XXX:3002" en la consola donde ejecutaste <code className="bg-gray-800 px-1 py-0.5 rounded">npm run dev</code>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
 
             <div className="flex justify-center mb-6">
               <div className="p-6 bg-white rounded-2xl shadow-2xl">

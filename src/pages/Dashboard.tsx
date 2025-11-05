@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { 
   TrendingUp, Activity, Shield, BarChart3, Users, Zap,
   DollarSign, AlertCircle, CheckCircle2, 
-  ArrowRight, Sparkles, LineChart, QrCode, Download
+  ArrowRight, Sparkles, LineChart, QrCode, Download, Copy
 } from 'lucide-react'
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import QRCodeModal from '../components/QRCodeModal'
@@ -302,6 +302,83 @@ export default function Dashboard() {
             </motion.div>
           ))}
         </div>
+
+        {/* Download Link Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.8 }}
+          className="glass-card rounded-2xl p-8 mb-8 border border-primary/30"
+        >
+          <div className="text-center mb-6">
+            <div className="flex justify-center mb-4">
+              <div className="p-4 bg-gradient-to-br from-primary/20 to-blue-500/20 rounded-2xl border border-primary/30">
+                <Download className="w-10 h-10 text-primary" />
+              </div>
+            </div>
+            <h2 className="text-3xl font-bold mb-2">
+              <span className="text-gradient">Link de Descarga</span>
+            </h2>
+            <p className="text-gray-400">
+              Accede a la aplicación desde cualquier dispositivo
+            </p>
+          </div>
+
+          <div className="space-y-4">
+            <div className="p-4 bg-gray-800/50 rounded-xl border border-gray-700">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm text-gray-400 font-semibold">URL Principal:</span>
+                <button
+                  onClick={() => navigator.clipboard.writeText(window.location.origin)}
+                  className="p-2 hover:bg-gray-700 rounded-lg transition-colors"
+                  title="Copiar URL"
+                >
+                  <Copy className="w-4 h-4 text-gray-400" />
+                </button>
+              </div>
+              <code className="text-primary font-mono text-sm break-all">
+                {window.location.origin}
+              </code>
+            </div>
+
+            <div className="p-4 bg-gray-800/50 rounded-xl border border-gray-700">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm text-gray-400 font-semibold">Página de Descarga:</span>
+                <button
+                  onClick={() => navigator.clipboard.writeText(`${window.location.origin}/download`)}
+                  className="p-2 hover:bg-gray-700 rounded-lg transition-colors"
+                  title="Copiar URL"
+                >
+                  <Copy className="w-4 h-4 text-gray-400" />
+                </button>
+              </div>
+              <code className="text-primary font-mono text-sm break-all">
+                {window.location.origin}/download
+              </code>
+            </div>
+
+            <div className="flex gap-3">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => navigate('/download')}
+                className="flex-1 gradient-primary text-white px-6 py-4 rounded-xl font-semibold flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transition-all glow-effect"
+              >
+                <Download className="w-5 h-5" />
+                Ir a Página de Descarga
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setShowQR(true)}
+                className="flex-1 glass-card text-white px-6 py-4 rounded-xl font-semibold flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transition-all border border-primary/30 hover:border-primary/50"
+              >
+                <QrCode className="w-5 h-5" />
+                Ver QR Code
+              </motion.button>
+            </div>
+          </div>
+        </motion.div>
 
         {/* Footer */}
         <motion.div
