@@ -3,8 +3,8 @@ import { motion } from 'framer-motion'
 import { QRCodeSVG } from 'qrcode.react'
 import { 
   Smartphone, Download, Copy, CheckCircle2, X, 
-  Apple, Chrome, Android, Share2, ExternalLink,
-  QrCode, Globe
+  Apple, Chrome, Share2, ExternalLink,
+  QrCode, Globe, Smartphone as AndroidIcon
 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 
@@ -231,7 +231,7 @@ export default function DownloadPage() {
                 {isIOS ? (
                   <Apple className="w-8 h-8 text-primary" />
                 ) : isAndroid ? (
-                  <Android className="w-8 h-8 text-green-400" />
+                  <AndroidIcon className="w-8 h-8 text-green-400" />
                 ) : (
                   <Chrome className="w-8 h-8 text-blue-400" />
                 )}
