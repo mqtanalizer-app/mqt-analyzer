@@ -1,0 +1,36 @@
+{
+  "name": "MQT Analyzer - Market Quantum Tool",
+  "short_name": "MQT Analyzer",
+  "description": "Advanced Crypto Token Analysis Platform with AI",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#121212",
+  "theme_color": "#00C4CC",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["finance", "business", "utilities"],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Token Analysis",
+      "short_name": "Analyze",
+      "description": "Analyze any crypto token",
+      "url": "/token/0xef0cdae2FfEEeFA539a244a16b3f46ba75b8c810",
+      "icons": [{ "src": "/icon-192x192.png", "sizes": "192x192" }]
+    }
+  ]
+}
+

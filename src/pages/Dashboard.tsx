@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { 
   TrendingUp, Activity, Shield, BarChart3, Users, Zap,
   DollarSign, AlertCircle, CheckCircle2, 
-  ArrowRight, Sparkles, LineChart, QrCode
+  ArrowRight, Sparkles, LineChart, QrCode, Download
 } from 'lucide-react'
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import QRCodeModal from '../components/QRCodeModal'
@@ -115,6 +115,16 @@ export default function Dashboard() {
               </div>
             </div>
             <div className="flex items-center gap-3">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => navigate('/download')}
+                className="glass-card text-white px-6 py-4 rounded-xl font-semibold flex items-center gap-3 shadow-lg hover:shadow-xl transition-all border border-primary/30 hover:border-primary/50"
+                title="Descargar aplicación"
+              >
+                <Download className="w-5 h-5" />
+                <span className="hidden sm:inline">Descargar App</span>
+              </motion.button>
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}

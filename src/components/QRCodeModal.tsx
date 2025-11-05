@@ -126,10 +126,20 @@ export default function QRCodeModal({ isOpen, onClose }: QRCodeModalProps) {
                 </div>
               </div>
 
+              {/* CTA Button */}
+              <div className="mt-6">
+                <a
+                  href="/download"
+                  className="block w-full text-center gradient-primary text-white px-6 py-3 rounded-xl font-semibold hover:shadow-xl transition-all glow-effect"
+                >
+                  Ver Instrucciones Completas de Descarga
+                </a>
+              </div>
+
               {/* Network Info */}
               <div className="mt-6 pt-6 border-t border-gray-800">
                 <p className="text-xs text-gray-500 text-center">
-                  Asegúrate de que tu dispositivo esté en la misma red Wi-Fi
+                  Puedes acceder desde cualquier dispositivo conectado a internet
                 </p>
               </div>
             </motion.div>

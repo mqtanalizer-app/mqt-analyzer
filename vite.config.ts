@@ -20,5 +20,6 @@ export default defineConfig({
     minify: 'esbuild',
     sourcemap: false,
   },
+  publicDir: 'public',
 })
 

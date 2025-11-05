@@ -5,6 +5,7 @@ import SmartContractAnalyzer from './pages/SmartContractAnalyzer'
 import WhaleTracker from './pages/WhaleTracker'
 import SocialSentiment from './pages/SocialSentiment'
 import StrategyBuilder from './pages/StrategyBuilder'
+import DownloadPage from './pages/DownloadPage'
 import GoogleTranslate from './components/GoogleTranslate'
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
         <Route path="/whale-tracker" element={<WhaleTracker />} />
         <Route path="/social-sentiment" element={<SocialSentiment />} />
         <Route path="/strategy-builder" element={<StrategyBuilder />} />
+        <Route path="/download" element={<DownloadPage />} />
         {/* Redirect old AI assistant route to dashboard */}
         <Route path="/claude-assistant" element={<Navigate to="/" replace />} />
         {/* Catch all other routes */}
