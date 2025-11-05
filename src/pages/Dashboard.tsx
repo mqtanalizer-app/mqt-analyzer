@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { 
   TrendingUp, Activity, Shield, BarChart3, Users, Zap,
   DollarSign, AlertCircle, CheckCircle2, 
-  ArrowRight, Sparkles, LineChart, QrCode, Download, Copy, Globe, ExternalLink, Wallet, MessageSquare, Waves
+  ArrowRight, Sparkles, LineChart, QrCode, Download, Copy, Globe, ExternalLink, Wallet, MessageSquare, Waves, Brain, Link2
 } from 'lucide-react'
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import QRCodeModal from '../components/QRCodeModal'
@@ -168,6 +168,26 @@ export default function Dashboard() {
       borderColor: "border-teal-500/30",
       iconColor: "text-teal-400",
       stats: "Market depth"
+    },
+    {
+      icon: <Brain className="w-8 h-8" />,
+      title: "Price Prediction",
+      description: "ML-powered price predictions with scenarios",
+      link: "/price-prediction",
+      gradient: "from-indigo-500/20 to-purple-500/20",
+      borderColor: "border-indigo-500/30",
+      iconColor: "text-indigo-400",
+      stats: "72% accuracy"
+    },
+    {
+      icon: <Link2 className="w-8 h-8" />,
+      title: "Correlation Analysis",
+      description: "Correlation with tokens, markets, and sectors",
+      link: "/correlation-analysis",
+      gradient: "from-violet-500/20 to-purple-500/20",
+      borderColor: "border-violet-500/30",
+      iconColor: "text-violet-400",
+      stats: "Risk factors"
     },
   ]
 

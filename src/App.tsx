@@ -4,6 +4,8 @@ import TokenAnalysis from './pages/TokenAnalysis'
 import AdvancedTechnicalAnalysis from './pages/AdvancedTechnicalAnalysis'
 import AdvancedSentimentAnalysis from './pages/AdvancedSentimentAnalysis'
 import LiquidityAnalysis from './pages/LiquidityAnalysis'
+import PricePrediction from './pages/PricePrediction'
+import CorrelationAnalysis from './pages/CorrelationAnalysis'
 import PortfolioTracker from './pages/PortfolioTracker'
 import SmartContractAnalyzer from './pages/SmartContractAnalyzer'
 import WhaleTracker from './pages/WhaleTracker'
@@ -26,6 +28,8 @@ function App() {
         <Route path="/technical-analysis" element={<AdvancedTechnicalAnalysis />} />
         <Route path="/sentiment-analysis" element={<AdvancedSentimentAnalysis />} />
         <Route path="/liquidity-analysis" element={<LiquidityAnalysis />} />
+        <Route path="/price-prediction" element={<PricePrediction />} />
+        <Route path="/correlation-analysis" element={<CorrelationAnalysis />} />
         <Route path="/portfolio" element={<PortfolioTracker />} />
         <Route path="/contract-analyzer" element={<SmartContractAnalyzer />} />
         <Route path="/whale-tracker" element={<WhaleTracker />} />
