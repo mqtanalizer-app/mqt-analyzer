@@ -7,13 +7,13 @@ import SocialSentiment from './pages/SocialSentiment'
 import StrategyBuilder from './pages/StrategyBuilder'
 import DownloadPage from './pages/DownloadPage'
 import GoogleTranslate from './components/GoogleTranslate'
-import PWAInstallBanner from './components/PWAInstallBanner'
+import AutoInstallPrompt from './components/AutoInstallPrompt'
 
 function App() {
   return (
     <div className="min-h-screen bg-dark">
-      {/* PWA Install Banner - Visible on all pages */}
-      <PWAInstallBanner />
+      {/* Auto Install Prompt - Professional automatic installation */}
+      <AutoInstallPrompt />
       
       <Routes>
         <Route path="/" element={<Dashboard />} />

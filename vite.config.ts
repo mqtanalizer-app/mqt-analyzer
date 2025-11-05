@@ -14,12 +14,20 @@ export default defineConfig({
     port: 3002,
     host: '0.0.0.0',
     strictPort: false,
+    // Asegurar que los archivos estáticos se sirvan correctamente
+    fs: {
+      strict: false,
+    },
   },
   build: {
     target: 'esnext',
     minify: 'esbuild',
     sourcemap: false,
+    // Asegurar que favicon.ico se copie correctamente
+    copyPublicDir: true,
   },
   publicDir: 'public',
+  // Asegurar que los archivos estáticos se sirvan correctamente
+  appType: 'spa',
 })
 

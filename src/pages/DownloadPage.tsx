@@ -90,29 +90,37 @@ export default function DownloadPage() {
       return {
         title: 'Instalar en iOS (Safari)',
         steps: [
-          'Abre Safari en tu iPhone/iPad',
-          'Toca el botón de compartir (cuadrado con flecha)',
-          'Desplázate hacia abajo y toca "Agregar a pantalla de inicio"',
-          'Toca "Agregar" en la esquina superior derecha'
+          '1️⃣ Abre Safari en tu iPhone/iPad (IMPORTANTE: usa Safari, no Chrome)',
+          '2️⃣ Accede a la app escribiendo la URL o escaneando el QR code',
+          '3️⃣ Toca el botón de COMPARTIR en la parte inferior de Safari (cuadrado con flecha hacia arriba)',
+          '4️⃣ Desplázate HACIA ABAJO en el menú que aparece',
+          '5️⃣ Toca "Agregar a pantalla de inicio" (tiene un icono de + con cuadrado)',
+          '6️⃣ Toca "Agregar" en la esquina superior derecha',
+          '7️⃣ ¡Listo! Busca el icono de "MQT Analyzer" en tu pantalla de inicio'
         ]
       }
     } else if (isAndroid) {
       return {
         title: 'Instalar en Android (Chrome)',
         steps: [
-          'Abre Chrome en tu dispositivo Android',
-          'Toca el menú (3 puntos) en la esquina superior derecha',
-          'Selecciona "Agregar a pantalla de inicio" o "Instalar app"',
-          'Confirma la instalación'
+          '1️⃣ Abre Chrome en tu dispositivo Android',
+          '2️⃣ Accede a la app escribiendo la URL o escaneando el QR code',
+          '3️⃣ Toca el MENÚ (3 puntos verticales) en la esquina superior derecha',
+          '4️⃣ Busca y toca "Agregar a pantalla de inicio" o "Instalar app"',
+          '5️⃣ Confirma la instalación',
+          '6️⃣ ¡Listo! Busca el icono de "MQT Analyzer" en tu pantalla de inicio'
         ]
       }
     } else {
       return {
-        title: 'Instalar en Desktop',
+        title: 'Instalar en Desktop (Chrome/Edge)',
         steps: [
-          'Haz clic en el icono de instalación en la barra de direcciones',
-          'O ve al menú del navegador y selecciona "Instalar aplicación"',
-          'Confirma la instalación'
+          '1️⃣ Abre Chrome o Edge en tu escritorio',
+          '2️⃣ Accede a la app escribiendo la URL',
+          '3️⃣ Busca el ICONO DE INSTALACIÓN en la barra de direcciones (monitor con flecha)',
+          '4️⃣ Haz clic en el icono o ve al menú (3 puntos) → "Instalar aplicación"',
+          '5️⃣ Confirma la instalación',
+          '6️⃣ ¡Listo! La app se abrirá como una ventana independiente'
         ]
       }
     }

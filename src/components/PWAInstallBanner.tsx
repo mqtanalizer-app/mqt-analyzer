@@ -117,7 +117,7 @@ export default function PWAInstallBanner() {
                   <h3 className="font-bold text-white mb-1">Instalar MQT Analyzer</h3>
                   <p className="text-sm text-gray-400">
                     {isIOS ? (
-                      <>Instala la app para acceso rápido desde tu pantalla de inicio</>
+                      <>Instala la app para acceso rápido desde tu pantalla de inicio. Usa Safari y toca el botón de compartir.</>
                     ) : isAndroid ? (
                       <>Instala la app para acceso rápido y funcionamiento offline</>
                     ) : (

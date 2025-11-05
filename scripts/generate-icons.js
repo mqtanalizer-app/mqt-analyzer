@@ -158,3 +158,4 @@ sharp(svg)
   process.exit(1)
 }
 
+

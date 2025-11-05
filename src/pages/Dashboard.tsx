@@ -1,17 +1,25 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import { 
   TrendingUp, Activity, Shield, BarChart3, Users, Zap,
   DollarSign, AlertCircle, CheckCircle2, 
-  ArrowRight, Sparkles, LineChart, QrCode, Download, Copy
+  ArrowRight, Sparkles, LineChart, QrCode, Download, Copy, Globe, ExternalLink
 } from 'lucide-react'
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import QRCodeModal from '../components/QRCodeModal'
+import { getNetworkURL } from '../utils/networkUtils'
 
 export default function Dashboard() {
   const navigate = useNavigate()
   const [showQR, setShowQR] = useState(false)
+  const [copied, setCopied] = useState(false)
+  
+  // Auto-detect network URL for QR
+  useEffect(() => {
+    const networkUrl = getNetworkURL()
+    // This will be used by QRCodeModal automatically
+  }, [])
 
   // Datos de mercado en tiempo real
   const marketData = {
@@ -303,79 +311,272 @@ export default function Dashboard() {
           ))}
         </div>
 
-        {/* Download Link Section */}
+        {/* Download Section - PROMINENT */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.8 }}
-          className="glass-card rounded-2xl p-8 mb-8 border border-primary/30"
+          className="relative glass-card rounded-2xl p-8 mb-8 border-2 border-primary/50 overflow-hidden"
         >
-          <div className="text-center mb-6">
-            <div className="flex justify-center mb-4">
-              <div className="p-4 bg-gradient-to-br from-primary/20 to-blue-500/20 rounded-2xl border border-primary/30">
-                <Download className="w-10 h-10 text-primary" />
-              </div>
-            </div>
-            <h2 className="text-3xl font-bold mb-2">
-              <span className="text-gradient">Link de Descarga</span>
-            </h2>
-            <p className="text-gray-400">
-              Accede a la aplicación desde cualquier dispositivo
-            </p>
-          </div>
-
-          <div className="space-y-4">
-            <div className="p-4 bg-gray-800/50 rounded-xl border border-gray-700">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm text-gray-400 font-semibold">URL Principal:</span>
-                <button
-                  onClick={() => navigator.clipboard.writeText(window.location.origin)}
-                  className="p-2 hover:bg-gray-700 rounded-lg transition-colors"
-                  title="Copiar URL"
+          {/* Background Glow Effect */}
+          <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-blue-500/10 to-primary/10 animate-pulse"></div>
+          
+          <div className="relative">
+            <div className="text-center mb-8">
+              <motion.div
+                whileHover={{ scale: 1.1, rotate: 5 }}
+                className="flex justify-center mb-6"
+              >
+                <div className="p-6 bg-gradient-to-br from-primary/30 to-blue-500/30 rounded-3xl border-2 border-primary/50 shadow-2xl glow-effect">
+                  <Download className="w-16 h-16 text-primary" />
+                </div>
+              </motion.div>
+              <h2 className="text-4xl font-bold mb-3">
+                <span className="text-gradient">📥 DESCARGAR APP</span>
+              </h2>
+              <p className="text-xl text-gray-300 mb-6">
+                Instala MQT Analyzer en tu dispositivo móvil o desktop
+              </p>
+              
+              {/* Big Download Button */}
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => navigate('/download')}
+                  className="gradient-primary text-white px-12 py-6 rounded-2xl font-bold text-xl flex items-center gap-4 shadow-2xl hover:shadow-primary/50 transition-all glow-effect min-w-[280px] justify-center"
                 >
-                  <Copy className="w-4 h-4 text-gray-400" />
-                </button>
-              </div>
-              <code className="text-primary font-mono text-sm break-all">
-                {window.location.origin}
-              </code>
-            </div>
-
-            <div className="p-4 bg-gray-800/50 rounded-xl border border-gray-700">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm text-gray-400 font-semibold">Página de Descarga:</span>
-                <button
-                  onClick={() => navigator.clipboard.writeText(`${window.location.origin}/download`)}
-                  className="p-2 hover:bg-gray-700 rounded-lg transition-colors"
-                  title="Copiar URL"
+                  <Download className="w-8 h-8" />
+                  DESCARGAR AHORA
+                  <ArrowRight className="w-8 h-8" />
+                </motion.button>
+                
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setShowQR(true)}
+                  className="glass-card text-white px-8 py-6 rounded-2xl font-bold text-lg flex items-center gap-3 border-2 border-primary/50 hover:border-primary transition-all min-w-[200px] justify-center"
                 >
-                  <Copy className="w-4 h-4 text-gray-400" />
-                </button>
+                  <QrCode className="w-6 h-6" />
+                  Ver QR Code
+                </motion.button>
               </div>
-              <code className="text-primary font-mono text-sm break-all">
-                {window.location.origin}/download
-              </code>
             </div>
 
-            <div className="flex gap-3">
-              <motion.button
+            <div className="space-y-4">
+              <div className="p-5 bg-gray-800/70 rounded-xl border border-gray-700/50 backdrop-blur-sm">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-sm text-gray-300 font-semibold flex items-center gap-2">
+                    <Globe className="w-4 h-4" />
+                    URL de Descarga:
+                  </span>
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(window.location.origin)
+                      setCopied(true)
+                      setTimeout(() => setCopied(false), 2000)
+                    }}
+                    className="p-2 hover:bg-gray-700 rounded-lg transition-colors flex items-center gap-2"
+                    title="Copiar URL"
+                  >
+                    {copied ? (
+                      <>
+                        <CheckCircle2 className="w-5 h-5 text-green-400" />
+                        <span className="text-green-400 text-sm font-semibold">Copiado!</span>
+                      </>
+                    ) : (
+                      <Copy className="w-5 h-5 text-gray-400" />
+                    )}
+                  </button>
+                </div>
+                <code className="text-primary font-mono text-base break-all bg-gray-900/50 px-3 py-2 rounded-lg block">
+                  {window.location.origin}
+                </code>
+              </div>
+
+              <div className="p-5 bg-gray-800/70 rounded-xl border border-gray-700/50 backdrop-blur-sm">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-sm text-gray-300 font-semibold flex items-center gap-2">
+                    <Download className="w-4 h-4" />
+                    Página de Descarga Completa:
+                  </span>
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(`${window.location.origin}/download`)
+                      setCopied(true)
+                      setTimeout(() => setCopied(false), 2000)
+                    }}
+                    className="p-2 hover:bg-gray-700 rounded-lg transition-colors flex items-center gap-2"
+                    title="Copiar URL"
+                  >
+                    {copied ? (
+                      <>
+                        <CheckCircle2 className="w-5 h-5 text-green-400" />
+                        <span className="text-green-400 text-sm font-semibold">Copiado!</span>
+                      </>
+                    ) : (
+                      <Copy className="w-5 h-5 text-gray-400" />
+                    )}
+                  </button>
+                </div>
+                <code className="text-primary font-mono text-base break-all bg-gray-900/50 px-3 py-2 rounded-lg block">
+                  {window.location.origin}/download
+                </code>
+              </div>
+
+            {/* Quick Actions */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
+              <motion.div
                 whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                className="p-4 bg-gradient-to-br from-primary/20 to-blue-500/20 rounded-xl border border-primary/30 text-center cursor-pointer"
                 onClick={() => navigate('/download')}
-                className="flex-1 gradient-primary text-white px-6 py-4 rounded-xl font-semibold flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transition-all glow-effect"
               >
-                <Download className="w-5 h-5" />
-                Ir a Página de Descarga
-              </motion.button>
-              <motion.button
+                <Download className="w-8 h-8 text-primary mx-auto mb-2" />
+                <p className="text-sm font-semibold text-white">Página Completa</p>
+                <p className="text-xs text-gray-400">Instrucciones detalladas</p>
+              </motion.div>
+              
+              <motion.div
                 whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                className="p-4 bg-gradient-to-br from-green-500/20 to-emerald-500/20 rounded-xl border border-green-500/30 text-center cursor-pointer"
                 onClick={() => setShowQR(true)}
-                className="flex-1 glass-card text-white px-6 py-4 rounded-xl font-semibold flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transition-all border border-primary/30 hover:border-primary/50"
               >
-                <QrCode className="w-5 h-5" />
-                Ver QR Code
-              </motion.button>
+                <QrCode className="w-8 h-8 text-green-400 mx-auto mb-2" />
+                <p className="text-sm font-semibold text-white">QR Code</p>
+                <p className="text-xs text-gray-400">Escanear para móvil</p>
+              </motion.div>
+              
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                className="p-4 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-xl border border-purple-500/30 text-center cursor-pointer"
+                onClick={() => {
+                  navigator.clipboard.writeText(window.location.origin)
+                  setCopied(true)
+                  setTimeout(() => setCopied(false), 2000)
+                }}
+              >
+                <Copy className="w-8 h-8 text-purple-400 mx-auto mb-2" />
+                <p className="text-sm font-semibold text-white">Copiar Link</p>
+                <p className="text-xs text-gray-400">Compartir URL</p>
+              </motion.div>
+            </div>
+
+            {/* Render Link Section - PROMINENT */}
+            <div className="mt-6 p-6 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 rounded-xl border-2 border-blue-500/50 shadow-2xl">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-blue-500/30 rounded-xl border border-blue-500/50">
+                    <Globe className="w-6 h-6 text-blue-400" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-white text-xl">🔗 Link de Render</h3>
+                    <p className="text-sm text-gray-300">Tu URL pública de producción</p>
+                  </div>
+                </div>
+                <motion.a
+                  href="https://render.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="px-6 py-3 bg-blue-500 text-white rounded-xl font-bold hover:bg-blue-600 transition-colors flex items-center gap-2 shadow-lg"
+                >
+                  <ExternalLink className="w-5 h-5" />
+                  Ir a Render.com
+                </motion.a>
+              </div>
+              
+              <div className="p-5 bg-gray-900/70 rounded-lg border border-gray-700/50 backdrop-blur-sm">
+                <div className="flex items-center justify-between gap-3 mb-3">
+                  <div className="flex-1">
+                    <p className="text-xs text-gray-400 mb-2 font-semibold">URL de Producción:</p>
+                    <code className="text-blue-400 font-mono text-base break-all block bg-gray-800/50 px-4 py-3 rounded-lg">
+                      {window.location.hostname.includes('onrender.com') 
+                        ? window.location.origin 
+                        : 'https://mqt-analyzer.onrender.com'}
+                    </code>
+                  </div>
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => {
+                      const renderUrl = window.location.hostname.includes('onrender.com') 
+                        ? window.location.origin 
+                        : 'https://mqt-analyzer.onrender.com'
+                      navigator.clipboard.writeText(renderUrl)
+                      setCopied(true)
+                      setTimeout(() => setCopied(false), 2000)
+                    }}
+                    className="px-4 py-3 bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-600 transition-colors flex items-center gap-2 flex-shrink-0 shadow-lg"
+                    title="Copiar URL de Render"
+                  >
+                    {copied ? (
+                      <>
+                        <CheckCircle2 className="w-5 h-5" />
+                        <span>Copiado!</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-5 h-5" />
+                        <span>Copiar</span>
+                      </>
+                    )}
+                  </motion.button>
+                </div>
+                
+                {!window.location.hostname.includes('onrender.com') && (
+                  <div className="mt-4 p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
+                    <p className="text-sm text-yellow-400 font-semibold mb-2">📝 ¿No tienes tu link de Render?</p>
+                    <ol className="text-xs text-gray-300 space-y-1 list-decimal list-inside ml-2">
+                      <li>Ve a <a href="https://render.com" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline">render.com</a> e inicia sesión</li>
+                      <li>Busca tu servicio "mqt-analyzer" en el Dashboard</li>
+                      <li>Copia la URL que aparece en la parte superior</li>
+                      <li>O crea un nuevo Static Site si aún no lo has desplegado</li>
+                    </ol>
+                  </div>
+                )}
+                
+                {window.location.hostname.includes('onrender.com') && (
+                  <div className="mt-4 p-4 bg-green-500/10 border border-green-500/30 rounded-lg">
+                    <p className="text-sm text-green-400 font-semibold flex items-center gap-2">
+                      <CheckCircle2 className="w-5 h-5" />
+                      ¡Estás usando tu link de Render!
+                    </p>
+                    <p className="text-xs text-gray-300 mt-1">
+                      Esta es tu URL pública de producción
+                    </p>
+                  </div>
+                )}
+              </div>
+              
+              <div className="mt-4 flex gap-3">
+                <motion.a
+                  href="https://render.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="flex-1 px-4 py-3 bg-gray-800 text-white rounded-lg font-semibold hover:bg-gray-700 transition-colors text-center flex items-center justify-center gap-2 border border-gray-700"
+                >
+                  <ExternalLink className="w-4 h-4" />
+                  Abrir Dashboard de Render
+                </motion.a>
+                <motion.button
+                  onClick={() => {
+                    const renderUrl = window.location.hostname.includes('onrender.com') 
+                      ? window.location.origin 
+                      : 'https://mqt-analyzer.onrender.com'
+                    window.open(renderUrl, '_blank')
+                  }}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="flex-1 px-4 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-lg font-bold hover:shadow-lg transition-all text-center flex items-center justify-center gap-2"
+                >
+                  <Globe className="w-4 h-4" />
+                  Abrir Link de Render
+                </motion.button>
+              </div>
+            </div>
             </div>
           </div>
         </motion.div>

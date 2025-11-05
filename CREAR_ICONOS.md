@@ -65,3 +65,4 @@ Después de crear los iconos:
 
 Si no tienes iconos ahora, la aplicación funcionará igual, pero los usuarios no verán un icono personalizado al instalar la app en sus dispositivos.
 
+
