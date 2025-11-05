@@ -1,6 +1,8 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import Dashboard from './pages/Dashboard'
 import TokenAnalysis from './pages/TokenAnalysis'
+import AdvancedTechnicalAnalysis from './pages/AdvancedTechnicalAnalysis'
+import PortfolioTracker from './pages/PortfolioTracker'
 import SmartContractAnalyzer from './pages/SmartContractAnalyzer'
 import WhaleTracker from './pages/WhaleTracker'
 import SocialSentiment from './pages/SocialSentiment'
@@ -8,6 +10,7 @@ import StrategyBuilder from './pages/StrategyBuilder'
 import DownloadPage from './pages/DownloadPage'
 import GoogleTranslate from './components/GoogleTranslate'
 import AutoInstallPrompt from './components/AutoInstallPrompt'
+import AlertManager from './components/AlertManager'
 
 function App() {
   return (
@@ -18,6 +21,8 @@ function App() {
       <Routes>
         <Route path="/" element={<Dashboard />} />
         <Route path="/token/:address" element={<TokenAnalysis />} />
+        <Route path="/technical-analysis" element={<AdvancedTechnicalAnalysis />} />
+        <Route path="/portfolio" element={<PortfolioTracker />} />
         <Route path="/contract-analyzer" element={<SmartContractAnalyzer />} />
         <Route path="/whale-tracker" element={<WhaleTracker />} />
         <Route path="/social-sentiment" element={<SocialSentiment />} />
@@ -30,6 +35,8 @@ function App() {
       </Routes>
       {/* Google Translate Button - Available on all pages */}
       <GoogleTranslate />
+      {/* Alert Manager - Available on all pages */}
+      <AlertManager />
     </div>
   )
 }

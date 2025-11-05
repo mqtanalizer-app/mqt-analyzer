@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { 
   TrendingUp, Activity, Shield, BarChart3, Users, Zap,
   DollarSign, AlertCircle, CheckCircle2, 
-  ArrowRight, Sparkles, LineChart, QrCode, Download, Copy, Globe, ExternalLink
+  ArrowRight, Sparkles, LineChart, QrCode, Download, Copy, Globe, ExternalLink, Wallet
 } from 'lucide-react'
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import QRCodeModal from '../components/QRCodeModal'
@@ -128,6 +128,26 @@ export default function Dashboard() {
       borderColor: "border-indigo-500/30",
       iconColor: "text-indigo-400",
       stats: "12 strategies"
+    },
+    {
+      icon: <LineChart className="w-8 h-8" />,
+      title: "Technical Analysis",
+      description: "Advanced technical indicators and trading signals",
+      link: "/technical-analysis",
+      gradient: "from-yellow-500/20 to-orange-500/20",
+      borderColor: "border-yellow-500/30",
+      iconColor: "text-yellow-400",
+      stats: "RSI, MACD, Bollinger Bands"
+    },
+    {
+      icon: <Wallet className="w-8 h-8" />,
+      title: "Portfolio Tracker",
+      description: "Track multiple wallets and calculate portfolio value",
+      link: "/portfolio",
+      gradient: "from-cyan-500/20 to-teal-500/20",
+      borderColor: "border-cyan-500/30",
+      iconColor: "text-cyan-400",
+      stats: "Multi-wallet tracking"
     },
   ]
 
