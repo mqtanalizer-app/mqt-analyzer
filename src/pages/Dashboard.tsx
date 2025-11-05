@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { 
   TrendingUp, Activity, Shield, BarChart3, Users, Zap,
   DollarSign, AlertCircle, CheckCircle2, 
-  ArrowRight, Sparkles, LineChart, QrCode, Download, Copy, Globe, ExternalLink, Wallet
+  ArrowRight, Sparkles, LineChart, QrCode, Download, Copy, Globe, ExternalLink, Wallet, MessageSquare, Waves
 } from 'lucide-react'
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import QRCodeModal from '../components/QRCodeModal'
@@ -148,6 +148,26 @@ export default function Dashboard() {
       borderColor: "border-cyan-500/30",
       iconColor: "text-cyan-400",
       stats: "Multi-wallet tracking"
+    },
+    {
+      icon: <MessageSquare className="w-8 h-8" />,
+      title: "Sentiment Analysis",
+      description: "NLP-powered sentiment from Twitter, Reddit, Telegram, News",
+      link: "/sentiment-analysis",
+      gradient: "from-pink-500/20 to-rose-500/20",
+      borderColor: "border-pink-500/30",
+      iconColor: "text-pink-400",
+      stats: "5 sources"
+    },
+    {
+      icon: <Waves className="w-8 h-8" />,
+      title: "Liquidity Analysis",
+      description: "Deep market depth and liquidity analysis",
+      link: "/liquidity-analysis",
+      gradient: "from-teal-500/20 to-cyan-500/20",
+      borderColor: "border-teal-500/30",
+      iconColor: "text-teal-400",
+      stats: "Market depth"
     },
   ]
 

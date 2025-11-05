@@ -2,6 +2,8 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import Dashboard from './pages/Dashboard'
 import TokenAnalysis from './pages/TokenAnalysis'
 import AdvancedTechnicalAnalysis from './pages/AdvancedTechnicalAnalysis'
+import AdvancedSentimentAnalysis from './pages/AdvancedSentimentAnalysis'
+import LiquidityAnalysis from './pages/LiquidityAnalysis'
 import PortfolioTracker from './pages/PortfolioTracker'
 import SmartContractAnalyzer from './pages/SmartContractAnalyzer'
 import WhaleTracker from './pages/WhaleTracker'
@@ -22,6 +24,8 @@ function App() {
         <Route path="/" element={<Dashboard />} />
         <Route path="/token/:address" element={<TokenAnalysis />} />
         <Route path="/technical-analysis" element={<AdvancedTechnicalAnalysis />} />
+        <Route path="/sentiment-analysis" element={<AdvancedSentimentAnalysis />} />
+        <Route path="/liquidity-analysis" element={<LiquidityAnalysis />} />
         <Route path="/portfolio" element={<PortfolioTracker />} />
         <Route path="/contract-analyzer" element={<SmartContractAnalyzer />} />
         <Route path="/whale-tracker" element={<WhaleTracker />} />
