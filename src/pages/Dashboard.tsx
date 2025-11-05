@@ -9,11 +9,14 @@ import {
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import QRCodeModal from '../components/QRCodeModal'
 import { getNetworkURL } from '../utils/networkUtils'
+import { priceService, type TokenPriceData } from '../services/priceService'
 
 export default function Dashboard() {
   const navigate = useNavigate()
   const [showQR, setShowQR] = useState(false)
   const [copied, setCopied] = useState(false)
+  const [priceData, setPriceData] = useState<TokenPriceData | null>(null)
+  const [priceHistory, setPriceHistory] = useState<Array<{ time: string; price: number }>>([])
   
   // Auto-detect network URL for QR
   useEffect(() => {
@@ -21,23 +24,58 @@ export default function Dashboard() {
     // This will be used by QRCodeModal automatically
   }, [])
 
-  // Datos de mercado en tiempo real
+  // Cargar precio en tiempo real
+  useEffect(() => {
+    const fetchPrice = async () => {
+      try {
+        const data = await priceService.getAggregatedPrice()
+        setPriceData(data)
+      } catch (error) {
+        console.error('Error fetching price:', error)
+      }
+    }
+
+    fetchPrice()
+    const interval = setInterval(fetchPrice, 30000) // Actualizar cada 30 segundos
+
+    return () => clearInterval(interval)
+  }, [])
+
+  // Cargar historial de precios
+  useEffect(() => {
+    const fetchHistory = async () => {
+      try {
+        const history = await priceService.getPriceHistory(24)
+        setPriceHistory(history)
+      } catch (error) {
+        console.error('Error fetching price history:', error)
+      }
+    }
+
+    fetchHistory()
+    const interval = setInterval(fetchHistory, 60000) // Actualizar cada minuto
+
+    return () => clearInterval(interval)
+  }, [])
+
+  // Datos de mercado en tiempo real (usando datos reales si están disponibles)
   const marketData = {
-    totalMarketCap: 1250000,
-    totalVolume: 450000,
-    priceChange24h: 12.5,
-    activeHolders: 1250,
+    totalMarketCap: priceData?.marketCap || 1250000,
+    totalVolume: priceData?.volume24h || 450000,
+    priceChange24h: priceData?.priceChange24h || 12.5,
+    activeHolders: priceData?.holders || 1250,
     securityScore: 85,
-    liquidity: 125000
+    liquidity: priceData?.liquidity || 125000
   }
 
-  const priceChartData = [
+  // Usar historial real o fallback
+  const priceChartData = priceHistory.length > 0 ? priceHistory : [
     { time: '00:00', price: 0.0011 },
     { time: '04:00', price: 0.0012 },
     { time: '08:00', price: 0.00115 },
     { time: '12:00', price: 0.0013 },
     { time: '16:00', price: 0.00125 },
-    { time: '20:00', price: 0.001234 },
+    { time: '20:00', price: priceData?.price || 0.001234 },
   ]
 
   const modules = [

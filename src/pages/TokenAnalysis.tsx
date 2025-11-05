@@ -1,16 +1,17 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { 
   ArrowLeft, Search, TrendingUp, TrendingDown, 
   DollarSign, Users, Activity, Shield, Copy, ExternalLink,
-  CheckCircle2, AlertTriangle, Zap, BarChart3, PieChart as PieChartIcon
+  CheckCircle2, AlertTriangle, Zap, BarChart3, PieChart as PieChartIcon, RefreshCw
 } from 'lucide-react'
 import { 
   LineChart, Line, AreaChart, Area, BarChart, Bar, 
   PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, 
   Tooltip, Legend, ResponsiveContainer, RadialBarChart, RadialBar
 } from 'recharts'
+import { priceService, type TokenPriceData } from '../services/priceService'
 
 export default function TokenAnalysis() {
   const { address } = useParams<{ address: string }>()
@@ -18,17 +19,20 @@ export default function TokenAnalysis() {
   const [tokenAddress, setTokenAddress] = useState(address || '0xef0cdae2FfEEeFA539a244a16b3f46ba75b8c810')
   const [loading, setLoading] = useState(false)
   const [copied, setCopied] = useState(false)
+  const [priceData, setPriceData] = useState<TokenPriceData | null>(null)
+  const [priceHistory, setPriceHistory] = useState<Array<{ time: string; price: number }>>([])
+  const [refreshing, setRefreshing] = useState(false)
 
-  // Mock data - En producción vendría de APIs
+  // Datos estáticos del token
   const tokenData = {
     name: 'MQT',
     symbol: 'MQT',
-    price: 0.001234,
-    priceChange24h: 12.5,
-    marketCap: 1250000,
-    volume24h: 450000,
-    liquidity: 125000,
-    holders: 1250,
+    price: priceData?.price || 0.001234,
+    priceChange24h: priceData?.priceChange24h || 12.5,
+    marketCap: priceData?.marketCap || 1250000,
+    volume24h: priceData?.volume24h || 450000,
+    liquidity: priceData?.liquidity || 125000,
+    holders: priceData?.holders || 1250,
     securityScore: 85,
     supply: {
       total: '1,000,000,000',
@@ -40,13 +44,75 @@ export default function TokenAnalysis() {
     explorer: 'https://snowtrace.io/address/0xef0cdae2FfEEeFA539a244a16b3f46ba75b8c810'
   }
 
-  const priceData = [
+  // Cargar precio en tiempo real
+  useEffect(() => {
+    const fetchPrice = async () => {
+      try {
+        const data = await priceService.getAggregatedPrice()
+        setPriceData(data)
+      } catch (error) {
+        console.error('Error fetching price:', error)
+      }
+    }
+
+    // Cargar inmediatamente
+    fetchPrice()
+
+    // Actualizar cada 30 segundos
+    const interval = setInterval(fetchPrice, 30000)
+
+    return () => clearInterval(interval)
+  }, [])
+
+  // Cargar historial de precios
+  useEffect(() => {
+    const fetchHistory = async () => {
+      try {
+        const history = await priceService.getPriceHistory(24)
+        setPriceHistory(history)
+      } catch (error) {
+        console.error('Error fetching price history:', error)
+        // Fallback a datos mock
+        setPriceHistory([
+          { time: '00:00', price: 0.0011 },
+          { time: '04:00', price: 0.0012 },
+          { time: '08:00', price: 0.00115 },
+          { time: '12:00', price: 0.0013 },
+          { time: '16:00', price: 0.00125 },
+          { time: '20:00', price: priceData?.price || 0.001234 },
+        ])
+      }
+    }
+
+    fetchHistory()
+    const interval = setInterval(fetchHistory, 60000) // Actualizar cada minuto
+
+    return () => clearInterval(interval)
+  }, [priceData])
+
+  // Función para refrescar precio manualmente
+  const refreshPrice = async () => {
+    setRefreshing(true)
+    try {
+      const data = await priceService.getLivePrice()
+      setPriceData(data)
+      const history = await priceService.getPriceHistory(24)
+      setPriceHistory(history)
+    } catch (error) {
+      console.error('Error refreshing price:', error)
+    } finally {
+      setRefreshing(false)
+    }
+  }
+
+  // Usar historial real o fallback
+  const chartData = priceHistory.length > 0 ? priceHistory : [
     { time: '00:00', price: 0.0011, volume: 45000 },
     { time: '04:00', price: 0.0012, volume: 52000 },
     { time: '08:00', price: 0.00115, volume: 48000 },
     { time: '12:00', price: 0.0013, volume: 65000 },
     { time: '16:00', price: 0.00125, volume: 58000 },
-    { time: '20:00', price: 0.001234, volume: 62000 },
+    { time: '20:00', price: priceData?.price || 0.001234, volume: 62000 },
   ]
 
   const whales = [
@@ -159,7 +225,11 @@ export default function TokenAnalysis() {
           <div className="flex items-start justify-between mb-6">
             <div className="flex items-center gap-6">
               <div className="p-4 bg-gradient-to-br from-primary/20 to-blue-500/20 rounded-2xl border border-primary/30 glow-effect">
-                <Zap className="w-10 h-10 text-primary" />
+                <img 
+                  src="/icon-192x192.png" 
+                  alt="MQT Logo" 
+                  className="w-10 h-10 rounded-lg"
+                />
               </div>
               <div>
                 <h2 className="text-4xl font-bold mb-2">{tokenData.name} ({tokenData.symbol})</h2>
@@ -194,16 +264,31 @@ export default function TokenAnalysis() {
               </div>
             </div>
             <div className="text-right">
-              <div className="text-5xl font-bold text-gradient mb-2">
-                ${tokenData.price.toFixed(6)}
+              <div className="flex items-center justify-end gap-3 mb-2">
+                <div className="text-5xl font-bold text-gradient">
+                  ${tokenData.price > 0 ? tokenData.price.toLocaleString('en-US', { minimumFractionDigits: 6, maximumFractionDigits: 6 }) : '0.000000'}
+                </div>
+                <button
+                  onClick={refreshPrice}
+                  disabled={refreshing}
+                  className="p-2 hover:bg-gray-800/50 rounded-lg transition-colors disabled:opacity-50"
+                  title="Refresh price"
+                >
+                  <RefreshCw className={`w-5 h-5 text-gray-400 ${refreshing ? 'animate-spin' : ''}`} />
+                </button>
               </div>
+              {priceData?.source && (
+                <div className="text-xs text-gray-500 mb-2 text-right">
+                  Source: {priceData.source}
+                </div>
+              )}
               <div className={`flex items-center justify-end gap-2 text-lg font-semibold ${tokenData.priceChange24h >= 0 ? 'text-green-400' : 'text-red-400'}`}>
                 {tokenData.priceChange24h >= 0 ? (
                   <TrendingUp className="w-5 h-5" />
                 ) : (
                   <TrendingDown className="w-5 h-5" />
                 )}
-                <span>+{Math.abs(tokenData.priceChange24h)}% (24h)</span>
+                <span>{tokenData.priceChange24h >= 0 ? '+' : ''}{tokenData.priceChange24h.toFixed(2)}% (24h)</span>
               </div>
             </div>
           </div>
@@ -309,7 +394,7 @@ export default function TokenAnalysis() {
               </div>
             </div>
             <ResponsiveContainer width="100%" height={350}>
-              <AreaChart data={priceData}>
+              <AreaChart data={chartData}>
                 <defs>
                   <linearGradient id="priceGradient" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#00C4CC" stopOpacity={0.4}/>

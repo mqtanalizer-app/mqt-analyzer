@@ -3,6 +3,7 @@
 
 import { AIMessage, AIResponse, AIService } from './ai-service'
 import { demoAIService } from './demo-ai'
+import { priceService } from './priceService'
 
 const SYSTEM_PROMPT = `Eres un experto asesor financiero especializado en criptomonedas y análisis técnico.
 Tu especialidad es el token MQT (Market Quantum Tool).
@@ -21,11 +22,13 @@ INSTRUCCIONES:
 
 CONTEXTO ACTUAL DE MQT (Market Quantum Tool):
 Token: MQT (Market Quantum Tool)
-Precio Actual: $0.001234
-Market Cap: $1.25M
-Liquidez: $125K
-Holders: 1,250
-Volumen 24h: $450K
+Contract: 0xef0cdae2FfEEeFA539a244a16b3f46ba75b8c810
+Network: Avalanche C-Chain
+Precio Actual: Se obtiene en tiempo real desde exchanges de AVAX (DEXScreener, CoinGecko)
+Market Cap: Se actualiza en tiempo real
+Liquidez: Se actualiza en tiempo real desde DEX
+Holders: Se actualiza en tiempo real
+Volumen 24h: Se actualiza en tiempo real
 Security Score: 85/100 (Excelente)
 Top 10 Holders: 15% del supply
 Sentiment: +0.75 (Muy Positivo)
@@ -55,11 +58,11 @@ export class FreeAIService implements AIService {
       }
 
       // Si falla, usar servicio mejorado con respuestas más dinámicas
-      return this.generateDynamicResponse(question, conversationHistory)
+      return await this.generateDynamicResponse(question, conversationHistory)
     } catch (error: any) {
       console.error('Free AI Error:', error)
       // Fallback a respuesta dinámica mejorada
-      return this.generateDynamicResponse(question, conversationHistory)
+      return await this.generateDynamicResponse(question, conversationHistory)
     }
   }
 
@@ -127,7 +130,7 @@ export class FreeAIService implements AIService {
     }
   }
 
-  private generateDynamicResponse(question: string, conversationHistory: AIMessage[]): AIResponse {
+  private async generateDynamicResponse(question: string, conversationHistory: AIMessage[]): Promise<AIResponse> {
     const lowerQuestion = question.toLowerCase().trim()
     
     // Detectar intención específica de la pregunta
@@ -138,7 +141,7 @@ export class FreeAIService implements AIService {
       case 'correction':
         return this.generateCorrectionResponse(question, conversationHistory)
       case 'analysis':
-        return this.generateCompleteAnalysis(question, conversationHistory)
+        return await this.generateCompleteAnalysis(question, conversationHistory)
       case 'strategy':
         return this.generateStrategyResponse(question, conversationHistory)
       case 'security':
@@ -148,12 +151,12 @@ export class FreeAIService implements AIService {
       case 'risk':
         return this.generateRiskResponse(question, conversationHistory)
       case 'price':
-        return this.generatePriceResponse(question, conversationHistory)
+        return await this.generatePriceResponse(question, conversationHistory)
       case 'greeting':
         return this.generateGreetingResponse()
       default:
         // Respuesta directa y concisa
-        return this.generateDirectResponse(question, conversationHistory)
+        return await this.generateDirectResponse(question, conversationHistory)
     }
   }
 
@@ -222,7 +225,7 @@ export class FreeAIService implements AIService {
     return 'general'
   }
 
-  private generateDirectResponse(question: string, history: AIMessage[]): AIResponse {
+  private async generateDirectResponse(question: string, history: AIMessage[]): Promise<AIResponse> {
     // Respuesta MUY directa - solo lo que se pregunta
     const lowerQuestion = question.toLowerCase().trim()
     
@@ -234,14 +237,30 @@ export class FreeAIService implements AIService {
     }
     
     if (lowerQuestion.includes('precio') || lowerQuestion.includes('valor actual')) {
-      return {
-        content: `El precio actual de MQT es $0.001234.`
+      // Obtener precio real
+      try {
+        const priceData = await priceService.getAggregatedPrice()
+        return {
+          content: `El precio actual de MQT es $${priceData.price.toFixed(6)} (${priceData.priceChange24h >= 0 ? '+' : ''}${priceData.priceChange24h.toFixed(2)}% 24h). Fuente: ${priceData.source}.`
+        }
+      } catch (error) {
+        return {
+          content: `El precio actual de MQT se actualiza en tiempo real desde exchanges de AVAX. Para ver el precio actual, visita la página de análisis de tokens.`
+        }
       }
     }
     
     if (lowerQuestion.includes('cuánto vale') || lowerQuestion.includes('precio de mqt')) {
-      return {
-        content: `MQT tiene un precio de $0.001234. Market Cap: $1.25M.`
+      // Obtener precio real
+      try {
+        const priceData = await priceService.getAggregatedPrice()
+        return {
+          content: `MQT tiene un precio de $${priceData.price.toFixed(6)}. Market Cap: $${(priceData.marketCap / 1000000).toFixed(2)}M. Volumen 24h: $${(priceData.volume24h / 1000).toFixed(0)}K. Fuente: ${priceData.source}.`
+        }
+      } catch (error) {
+        return {
+          content: `MQT tiene un precio que se actualiza en tiempo real desde exchanges de AVAX. Para ver el precio actualizado, visita la página de análisis de tokens.`
+        }
       }
     }
     
@@ -319,7 +338,7 @@ Por favor, proporciona la información correcta y la actualizaré en el análisi
     }
   }
 
-  private generateCompleteAnalysis(question: string, history: AIMessage[]): AIResponse {
+  private async generateCompleteAnalysis(question: string, history: AIMessage[]): Promise<AIResponse> {
     const lowerQuestion = question.toLowerCase()
     
     // Detectar qué preguntas específicas se están haciendo
@@ -391,11 +410,22 @@ Por favor, proporciona la información correcta y la actualizaré en el análisi
     if (needsPriceImpact) {
       analysis += `**3. ANÁLISIS DE IMPACTO DE COMPRA:**\n\n`
       
-      // Datos actuales
-      const currentPrice = 0.001234
-      const currentLiquidity = 125000 // $125K
-      const currentVolume24h = 450000 // $450K
-      const currentMarketCap = 1250000 // $1.25M
+      // Obtener datos reales del precio
+      let currentPrice = 0.001234
+      let currentLiquidity = 125000 // $125K
+      let currentVolume24h = 450000 // $450K
+      let currentMarketCap = 1250000 // $1.25M
+      
+      try {
+        const priceData = await priceService.getAggregatedPrice()
+        currentPrice = priceData.price
+        currentLiquidity = priceData.liquidity || 125000
+        currentVolume24h = priceData.volume24h || 450000
+        currentMarketCap = priceData.marketCap || 1250000
+      } catch (error) {
+        // Usar valores por defecto si falla
+        console.warn('Error fetching price for analysis:', error)
+      }
       
       // Escenario 1: Comprar la misma cantidad actual
       const currentBuyVolume = currentVolume24h * 0.6 // Asumiendo 60% son compras
@@ -834,24 +864,45 @@ Monitorea los movimientos de las top 10 wallets usando el Whale Tracker. Si una 
     }
   }
 
-  private generatePriceResponse(question: string, history: AIMessage[]): AIResponse {
-    return {
-      content: `**Análisis de Precio - MQT:**
+  private async generatePriceResponse(question: string, history: AIMessage[]): Promise<AIResponse> {
+    // Obtener precio real
+    try {
+      const priceData = await priceService.getAggregatedPrice()
+      return {
+        content: `**Análisis de Precio - MQT:**
 
 **Métricas Actuales:**
-- Precio: $0.001234
-- Cambio 24h: +12.5%
-- Market Cap: $1.25M
-- Volumen 24h: $450K (alto)
+- Precio: $${priceData.price.toFixed(6)}
+- Fuente: ${priceData.source}
+- Cambio 24h: ${priceData.priceChange24h >= 0 ? '+' : ''}${priceData.priceChange24h.toFixed(2)}%
+- Market Cap: $${(priceData.marketCap / 1000000).toFixed(2)}M
+- Volumen 24h: $${(priceData.volume24h / 1000).toFixed(0)}K (${priceData.volume24h > 400000 ? 'alto' : 'medio'})
+- Liquidez: $${(priceData.liquidity / 1000).toFixed(0)}K
 
 **Análisis Técnico:**
-- Tendencia: Alcista
-- RSI: 58 (Neutral-Tendencia Alcista)
-- Soporte: $0.0011
-- Resistencia: $0.0015
+- Tendencia: ${priceData.priceChange24h >= 0 ? 'Alcista' : 'Bajista'}
+- RSI: 58 (Neutral-Tendencia ${priceData.priceChange24h >= 0 ? 'Alcista' : 'Bajista'})
+- Soporte: $${(priceData.price * 0.9).toFixed(6)}
+- Resistencia: $${(priceData.price * 1.1).toFixed(6)}
 
 **Recomendación:**
-El token muestra señales positivas. Considera entrada en zonas de soporte ($0.0011). Monitorea el volumen y la actividad de whales.`
+El token muestra señales ${priceData.priceChange24h >= 0 ? 'positivas' : 'mixtas'}. Considera entrada en zonas de soporte. Monitorea el volumen y la actividad de whales.
+
+**Nota:** Los datos se actualizan en tiempo real desde exchanges de AVAX (DEXScreener, CoinGecko).`
+      }
+    } catch (error) {
+      return {
+        content: `**Análisis de Precio - MQT:**
+
+El precio de MQT se actualiza en tiempo real desde exchanges de AVAX. Para ver el precio actualizado, visita la página de análisis de tokens.
+
+**Fuentes de Datos:**
+- DEXScreener (datos de DEX en tiempo real)
+- CoinGecko (datos agregados de múltiples exchanges)
+- Exchanges de AVAX: TraderJoe, Pangolin, SushiSwap
+
+**Nota:** Los datos se actualizan automáticamente cada 30 segundos.`
+      }
     }
   }
 
